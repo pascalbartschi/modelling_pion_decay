@@ -43,7 +43,7 @@ plt.xlabel("t [s]")
 plt.ylabel("Number of entries")
 plt.title("3(a) Histogram of 10'000 simulated decay times")
 plt.legend()
-plt.show()
+plt.savefig("projectIV 3a histogram.png")
 plt.clf()
 
 #--------
@@ -64,4 +64,8 @@ def binned_nll(params):
 bounds = [(tau_muon-10*tau_muon_uncert,tau_muon+10*tau_muon_uncert),(tau_pion-10*tau_pion_uncert,tau_pion+10*tau_pion_uncert)]
 tau_0 = [(tau_muon-10*tau_muon_uncert,tau_pion-10*tau_pion_uncert)]
 result = optimize.minimize(binned_nll,x0=tau_0,method="SLSQP",bounds=bounds)
-print("Best values for tau_mu, tau_pi:",result["x"])
+tau_muon_3b = result["x"][0]
+tau_pion_3b = result["x"][1]
+print("Estimated tau_muon =",tau_muon_3b,"s")
+print("Estimated tau_pion =", tau_pion_3b,"s")
+# need uncertainty on estimates and comparison w/ true vals
