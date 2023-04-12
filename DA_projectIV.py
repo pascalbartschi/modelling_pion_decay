@@ -53,7 +53,7 @@ def N(t,tau_mu,tau_pi):
 
 data = np.array(accepted_t_vals)
 
-def nll(params):
+def binned_nll(params):
     tau_mu,tau_pi = params
     pdf = N(bin_centres,tau_mu,tau_pi)
     prediction = len(data)*pdf*((t_end-t_start)/num_of_bins) # = f_i | last factor = delta x = binwidth
@@ -63,6 +63,5 @@ def nll(params):
 # minimising binned nll, bounds and starting values arbitrarily chosen...
 bounds = [(tau_muon-10*tau_muon_uncert,tau_muon+10*tau_muon_uncert),(tau_pion-10*tau_pion_uncert,tau_pion+10*tau_pion_uncert)]
 tau_0 = [(tau_muon-10*tau_muon_uncert,tau_pion-10*tau_pion_uncert)]
-function_to_be_minimised = nll # otherwise will not get anything because likelihood way too small
-result = optimize.minimize(function_to_be_minimised,x0=tau_0,method="SLSQP",bounds=bounds)
+result = optimize.minimize(binned_nll,x0=tau_0,method="SLSQP",bounds=bounds)
 print("Best values for tau_mu, tau_pi:",result["x"])
