@@ -19,13 +19,13 @@ def randVals(t_muon, t_pion):
     t0 = 1e-10
     tBounds = [(1e-10,3e-5)]
     minVal = opt.minimize(inverseN, x0=t0, args=(t_muon, t_pion), bounds=tBounds)["fun"]
-    nMax = 1/minVal
+    nMax = 1/minVal # max of decay function, needed for accept-reject method
     
     i = 0
     tStart = 0
     tEnd = 3e-5  
     
-    while i < 10000:
+    while i < 10000: # accept-reject method to get 10k t values according to the decay function
         t_i = np.random.uniform(tStart,tEnd)
         y_i = np.random.uniform(0,nMax)
         if N(t_i, t_muon, t_pion) > y_i:
