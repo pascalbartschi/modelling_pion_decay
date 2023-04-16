@@ -75,7 +75,6 @@ def tauEstimates(t_muon, t_muon_uncert, t_pion, t_pion_uncert):
 
 
 print("Exercise 3a)")
-np.random.seed(42)
 plotHist()
 print("Graph generated and saved.")
 print("")
