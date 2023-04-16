@@ -19,8 +19,8 @@ np.random.seed(42) # setting random seed for reproducibility
 
 # generate 10k decay times according to N(t) using accept-reject method
 accepted_t_vals = []
-t_0 = 1e-30
-t_bound = [(1e-30,3e-5)]
+t_0 = 1e-10
+t_bound = [(1e-10,3e-5)]
 n_max = 1/(optimize.minimize(one_over_N,x0=t_0,bounds=t_bound)["fun"]) # minimising 1/N = maximising N
 i=0
 t_start = 0
