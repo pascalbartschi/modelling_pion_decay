@@ -33,7 +33,8 @@ def randVals(t_muon, t_pion):
             i += 1    
     return tVals
 
-tVals_3a = randVals(tMuon,tPion)
+tVals3a = randVals(tMuon,tPion)
+counts3a, edges3a = np.histogram(tVals3a, bins=30, range=(tStart, tEnd))
 
 def plotHist(numBins=30): # plotting the accepted decay times (= t values) in a histogram to then perform the binned neg. log. likelih.
     tVals = randVals(tMuon, tPion)
@@ -85,6 +86,15 @@ print(f"Estimated lifetime of muon: {tMuon3b}s")
 print(f"Estimated lifetime of pion: {tPion3b}s")
 print("")
 
+def tauUncerts():
+    tau_m = np.linspace(tMuon3b-1e-6,tMuon3b+1e-6,10000)
+    tau_p = np.linspace(tau_pion_3b-1e-6,tau_pion_3b+1e-6,10000)
+    nll_res = [binned_nll((tau_m[i],tau_p[i])) for i in range(10000)]
+    plt.plot(tau_m,nll_res+np.abs(binned_nll_min))
+    plt.plot(tau_m,np.ones(10000)*0.5)
+    plt.show()
+    plt.clf()
+    print(tau_muon_3b-2.144e-6)
 
 print("Exercise 3c)")
 #np.random.seed()
