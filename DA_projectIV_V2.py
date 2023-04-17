@@ -34,7 +34,7 @@ def randVals(t_muon, t_pion):
             
     return(tVals, tStart, tEnd)
 
-def plotHist(numBins=30):
+def plotHist(numBins=30): # plotting the accepted decay times (= t values) in a histogram to then perform the binned neg. log. likelih.
     tVals, tStart, tEnd = randVals(tMuon, tPion)
     counts, edges = np.histogram(tVals, bins=numBins, range=(tStart, tEnd))
     binWidth = (tEnd-tStart)/numBins
@@ -52,6 +52,7 @@ def plotHist(numBins=30):
 
 
 def binnedNNL(parms, binCentre, tStart, tEnd, numBins, lenData, counts):
+    """binned negative log likelihood to find estimates of tau_mu & tau_pi from the 10'000 t values we created before and plotted in a histogram. We get the estimates by minimising the nll."""
     t_muon, t_pion = parms
     pdf = N(binCentre, t_muon, t_pion)
     prediction = lenData*pdf*((tEnd-tStart)/numBins) # = f_i | last factor = delta x = binwidth
