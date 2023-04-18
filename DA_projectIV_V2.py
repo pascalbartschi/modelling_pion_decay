@@ -62,6 +62,9 @@ def binnedNLL(parms, binCentre, tStart, tEnd, numBins, lenData, counts):
     summands = counts*np.log(prediction)-prediction
     return -summands.sum()
 
+def shiftedBinnedNLL(parms, binCentre, tStart, tEnd, numBins, lenData, counts, shift_for_uncert, fun_min):
+    return np.abs(binnedNLL(parms, binCentre, tStart, tEnd, numBins, lenData, counts) - fun_min - shift_for_uncert)
+
 def tauEstimates(t_muon, t_muon_uncert, t_pion, t_pion_uncert):
     tVals = randVals(t_muon, t_pion)
     lenData = len(tVals)
@@ -75,7 +78,13 @@ def tauEstimates(t_muon, t_muon_uncert, t_pion, t_pion_uncert):
     result = opt.minimize(binnedNLL,x0=tau0, args=(binCentre, tStart, tEnd, numBins, lenData, counts), method="SLSQP",bounds=bounds)
     tau_muon_est = result["x"][0]
     tau_pion_est = result["x"][1]
-    return tau_muon_est, tau_pion_est
+    #print(shiftedBinnedNLL([(tau_muon_est,tau_pion_est)],binCentre, tStart, tEnd, numBins, lenData, counts, 0.5,result["fun"]))
+    tau0 = [(1e-6,1e-17)]
+    zeros = opt.minimize(shiftedBinnedNLL,x0=tau0, args=(binCentre, tStart, tEnd, numBins, lenData, counts, 0.5, result["fun"]), method="SLSQP", bounds=bounds)
+    print(zeros)
+    #tau_muon_uncert = z
+    #tau_pion_uncert = np.sqrt(cov[1,1])
+    return tau_muon_est, tau_pion_est #, tau_muon_uncert, tau_pion_uncert
 
 
 print("Exercise 3a)")
@@ -90,20 +99,22 @@ print(f"Estimated lifetime of pion: {tPion3b}s")
 print("")
 
 def tauUncerts():
-    length = 100000
+    #length = len(tVals3a)
+    length = 1000
     tau_m = np.linspace(tMuon3b-1e-6,tMuon3b+1e-6,length)
-    tau_p = np.linspace(tPion3b-1e-6,tPion3b+1e-6,length)
-    nll_evaluated = np.zeros((length,length))
-    for i in range(length):
-        for j in range(length):
-            nll_evaluated[i][j] = binnedNLL((tau_m[i],tau_p[j]))
-
-    nll_res = [binnedNLL((tau_m[i],tau_p[i]),) for i in range(10000)]
-    plt.plot(tau_m,nll_res+np.abs(binned_nll_min))
-    plt.plot(tau_m,np.ones(10000)*0.5)
+    tau_p = np.linspace(tPion3b-2.5e-17,tPion3b+2.5e-17,length)
+    nll_evaluated = []
+    for i in range(length): # NLL is now a 2d function of tau_m & tau_p, 
+        tau_p_val = np.ones(length)*tau_p[i]
+        nll_evaluated.append([binnedNLL((tau_m[j],tau_p_val[j]),binCentre3a,tStart,tEnd,numBins3a,len(tVals3a),counts3a) for j in range(length)])
+    print(np.shape(nll_evaluated))
+    plt.plot(tau_m,nll_evaluated[499])
+    #plt.plot(tau_m,np.ones(10000)*0.5)
     plt.show()
-    plt.clf()
-    print(tau_muon_3b-2.144e-6)
+    #plt.clf()
+    #print(tau_muon_3b-2.144e-6)
+
+#tauUncerts()
 
 print("Exercise 3c)")
 #np.random.seed()
