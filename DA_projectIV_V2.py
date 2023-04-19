@@ -5,8 +5,8 @@ from scipy import optimize as opt
 tMuon = 2.1969811e-6 # [s]
 tMuonUncert = 0.0000022e-6 # [s]
 
-tPion = 8.43e-17 # [s]
-tPionUncert = 0.13e-17 # [s]
+tPion = 2.6033e-8 # [s]
+tPionUncert = 0.0005e-8 # [s]
 
 def N(t, t_muon, t_pion, N0=1): # exp. decay function (eq. (1) )
     return (N0/(t_muon-t_pion) * (np.exp(-t/t_muon)-np.exp(-t/t_pion)))
