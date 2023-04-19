@@ -5,8 +5,8 @@ from scipy import optimize as opt
 tMuon = 2.1969811e-6 # [s]
 tMuonUncert = 0.0000022e-6 # [s]
 
-tPion = 8.43e-17 # [s]
-tPionUncert = 0.13e-17 # [s]
+tPion = 2.6033e-8 # [s]
+tPionUncert = 0.0005e-8 # [s]
 
 def N(t, t_muon, t_pion, N0=1): # exp. decay function (eq. (1) )
     return (N0/(t_muon-t_pion) * (np.exp(-t/t_muon)-np.exp(-t/t_pion)))
@@ -34,7 +34,7 @@ def randVals(t_muon, t_pion):
     return tVals
 
 tVals3a = randVals(tMuon,tPion) # need this as global var
-numBins3a = 30
+numBins3a = 60
 counts3a, edges3a = np.histogram(tVals3a, bins=numBins3a, range=(tStart, tEnd))
 binWidth3a = (tEnd-tStart)/numBins3a
 binCentre3a = edges3a[:-1] + binWidth3a/2
@@ -54,7 +54,7 @@ def plotHist(numBins=30): # plotting the accepted decay times (= t values) in a 
     #plt.show()
     
 
-def binnedNLL(parms, binCentre, tStart, tEnd, numBins, lenData, counts):
+def binnedNLL(parms, binCentre, numBins, lenData, counts):
     """binned negative log likelihood to find estimates of tau_mu & tau_pi from the 10'000 t values we created before and plotted in a histogram. We get the estimates by minimising the nll."""
     t_muon, t_pion = parms
     pdf = N(binCentre, t_muon, t_pion)
@@ -62,28 +62,27 @@ def binnedNLL(parms, binCentre, tStart, tEnd, numBins, lenData, counts):
     summands = counts*np.log(prediction)-prediction
     return -summands.sum()
 
-def shiftedBinnedNLL(parms, binCentre, tStart, tEnd, numBins, lenData, counts, shift_for_uncert, fun_min):
-    return np.abs(binnedNLL(parms, binCentre, tStart, tEnd, numBins, lenData, counts) - fun_min - shift_for_uncert)
+def shiftedBinnedNLL(parms, binCentre, numBins, lenData, counts, shift_for_uncert, fun_min):
+    return np.abs(binnedNLL(parms, binCentre, numBins, lenData, counts) - fun_min - shift_for_uncert)
 
 def tauEstimates(t_muon, t_muon_uncert, t_pion, t_pion_uncert):
     tVals = randVals(t_muon, t_pion)
     lenData = len(tVals)
-    numBins = 30
+    numBins = 60
     counts, edges = np.histogram(tVals, bins=numBins, range=(tStart, tEnd))
     binWidth = (tEnd-tStart)/numBins
     binCentre = edges[:-1] + binWidth/2
     
-    bounds = [(t_muon-10*t_muon_uncert,t_muon+10*t_muon_uncert),(t_pion-10*t_pion_uncert,t_pion+10*t_pion_uncert)]
-    tau0 = [(t_muon-10*t_muon_uncert,t_pion-10*t_pion_uncert)]
-    result = opt.minimize(binnedNLL,x0=tau0, args=(binCentre, tStart, tEnd, numBins, lenData, counts), method="SLSQP",bounds=bounds)
+    factor = 1000
+    bounds = [(t_muon-factor*t_muon_uncert,t_muon+factor*t_muon_uncert),(t_pion-factor*t_pion_uncert,t_pion+factor*t_pion_uncert)]
+    tau0 = [(t_muon-factor*t_muon_uncert,t_pion-factor*t_pion_uncert)]
+    result = opt.minimize(binnedNLL,x0=tau0, args=(binCentre,numBins, lenData, counts), method="SLSQP",bounds=bounds)
     tau_muon_est = result["x"][0]
     tau_pion_est = result["x"][1]
-    #print(shiftedBinnedNLL([(tau_muon_est,tau_pion_est)],binCentre, tStart, tEnd, numBins, lenData, counts, 0.5,result["fun"]))
-    tau0 = [(1e-6,1e-17)]
-    zeros = opt.minimize(shiftedBinnedNLL,x0=tau0, args=(binCentre, tStart, tEnd, numBins, lenData, counts, 0.5, result["fun"]), method="SLSQP", bounds=bounds)
-    print(zeros)
-    #tau_muon_uncert = z
-    #tau_pion_uncert = np.sqrt(cov[1,1])
+
+    #tau0 = [(1e-6,1e-17)]
+    #zeros = opt.minimize(shiftedBinnedNLL,x0=tau0, args=(binCentre, numBins, lenData, counts, 0.5, result["fun"]), method="SLSQP", bounds=bounds)
+    #print(zeros)
     return tau_muon_est, tau_pion_est #, tau_muon_uncert, tau_pion_uncert
 
 
@@ -115,17 +114,16 @@ def tauUncerts():
     #print(tau_muon_3b-2.144e-6)
 
 #tauUncerts()
-
 print("Exercise 3c)")
-#np.random.seed()
-
 # many measurements..?
 tMuonVals = []
 tPionVals = []
-for i in range(10):
+for i in range(100):
     tMuonEst, tPionEst = tauEstimates(tMuon, tMuonUncert, tPion, tPionUncert)
     tMuonVals.append(tMuonEst)
     tPionVals.append(tPionEst)
-    print(i)
 
 print(tMuonVals)
+plt.hist(tMuonVals)
+plt.show()
+print(tPionVals)
