@@ -32,6 +32,7 @@ def randVals(t_muon, t_pion):
             tVals.append(t_i)
             i += 1    
     return tVals
+    
 
 tVals3a = randVals(tMuon,tPion)
 counts3a, edges3a = np.histogram(tVals3a, bins=30, range=(tStart, tEnd))
