@@ -34,3 +34,17 @@ def randVals(pdf, samples, params) :
 def wBin(mx, mn, n) :
     return (mx-mn)/n
 
+def threeA() :
+    tVals = randVals(N, 10000, tau)
+    nBins = 60
+    counts, edges = np.histogram(tVals, bins=nBins, range=tBound)
+    wBins = wBin(max(edges), min(edges), len(edges)-1)
+    cBins = edges[:-1] + wBins/2
+    plt.bar(cBins, counts, width=wBins, label="Generated Decay Times", alpha=0.5)
+    plt.xlabel("t [s]")
+    plt.ylabel("Number of entries")
+    plt.title("3(a) Histogram of 10'000 simulated decay times")
+    plt.legend()
+    plt.savefig("Exercise 3a.png")
+    plt.clf()
+
