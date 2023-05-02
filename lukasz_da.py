@@ -48,3 +48,25 @@ def threeA() :
     plt.savefig("Exercise 3a.png")
     plt.clf()
 
+def nllBinned(params, pdf, x, l, counts, w) :
+    pred = l*pdf(x, params)*w
+    return -sum(counts*np.log(pred)-pred)
+
+def tauEst() :
+    # generate random data according to the distribution
+    tVals = randVals(N, 10000, tau)
+
+    # compute length of these values once
+    l = len(tVals)
+
+    # define number of bins
+    nBins = 50
+    counts, edges = np.histogram(tVals, bins=nBins, range=tBound)
+    wBins = wBin(max(edges), min(edges), len(edges)-1)
+    cBins = edges[:-1] + wBins/2
+
+    #tauBounds = [(tau[0]-f*tau_unc[0], tau[0]+f*tau_unc[0]), (tau[1]-f*tau_unc[1], tau[1]+f*tau_unc[1])]
+    tauBounds = [(1e-6, 1e-5), (1e-8, 1e-7)]
+
+    result = opt.minimize(nllBinned, (2e-6, 2e-8), args=(N, cBins, l, counts, wBins), bounds=tauBounds, method='Nelder-Mead')
+    return result["x"][0], result["x"][1], result['success']
