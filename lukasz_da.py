@@ -31,3 +31,6 @@ def randVals(pdf, samples, params) :
     # accept-reject
     return [accept_uni(pdf, params, (0, tBound[1], 0, maxVal)) for i in range(samples)]
 
+def wBin(mx, mn, n) :
+    return (mx-mn)/n
+
