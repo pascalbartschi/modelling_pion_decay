@@ -23,3 +23,11 @@ def accept_uni(pdf, param, lowhi) :
             break
     return x
         
+# random numbers in an interval given a pdf
+def randVals(pdf, samples, params) :
+    minVal = opt.minimize(lambda t : 1/pdf(t, params), 0, bounds=[tBound])['fun']
+    maxVal = 1/minVal
+
+    # accept-reject
+    return [accept_uni(pdf, params, (0, tBound[1], 0, maxVal)) for i in range(samples)]
+
