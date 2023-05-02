@@ -70,3 +70,25 @@ def tauEst() :
 
     result = opt.minimize(nllBinned, (2e-6, 2e-8), args=(N, cBins, l, counts, wBins), bounds=tauBounds, method='Nelder-Mead')
     return result["x"][0], result["x"][1], result['success']
+
+def threeB() :
+    print(tauEst())
+
+def threeC(reps) :
+    tauVals=[[],[]]
+    suc = True
+    for i in range(reps) :
+        out = tauEst()
+        tauVals[0].append(out[0])
+        tauVals[1].append(out[1])
+        if out[2] == False : suc = False
+
+    if suc == False :
+        print("Optimisation failed!")
+    else :
+        mu_mean = np.mean(tauVals[0])
+        pi_mean = np.mean(tauVals[1])
+        mu_std = np.std(tauVals[0])
+        pi_std = np.std(tauVals[1])
+        print("muon avg: decay time and stdev: " + str(mu_mean) + ", " + str(mu_std))
+        print("pion avg: decay time and stdev: " + str(pi_mean) + ", " + str(pi_std))
