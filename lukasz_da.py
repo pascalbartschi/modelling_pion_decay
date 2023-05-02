@@ -7,7 +7,7 @@ tau = (2.1969811e-6, 2.6033e-8)
 tau_unc = (0.0000022e-6, 0.0005e-8)
 
 # variables
-tBound = (1e-10, 3e-5)
+tBound = (1e-8, 3e-5)
 
 # decay function
 def N(t, param, N0=1) :
@@ -65,10 +65,11 @@ def tauEst() :
     wBins = wBin(max(edges), min(edges), len(edges)-1)
     cBins = edges[:-1] + wBins/2
 
-    #tauBounds = [(tau[0]-f*tau_unc[0], tau[0]+f*tau_unc[0]), (tau[1]-f*tau_unc[1], tau[1]+f*tau_unc[1])]
-    tauBounds = [(1e-6, 1e-5), (1e-8, 1e-7)]
+    tau_range = (0.5e-6, 0.5e-8)
+    tauBounds = [(tau[0]-tau_range[0], tau[0]+tau_range[0]), (tau[1]-tau_range[1], tau[1]+tau_range[1])]
+    #tauBounds = [(1.5e-6, 3e-6), (1.5e-8, 3e-8)]
 
-    result = opt.minimize(nllBinned, (2e-6, 2e-8), args=(N, cBins, l, counts, wBins), bounds=tauBounds, method='Nelder-Mead')
+    result = opt.minimize(nllBinned, (2e-6, 2e-8), args=(N, cBins, l, counts, wBins), bounds=tauBounds, method='Powell')
     return result["x"][0], result["x"][1], result['success']
 
 def threeB() :
