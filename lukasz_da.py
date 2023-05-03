@@ -96,10 +96,24 @@ def threeC(reps) :
 
 def four(sigmaTvals=[1/100, 1/10, 1*tau[1]]):
     for sigmaT in sigmaTvals:
-        tValsFour = randVals(N,10000,tau) + np.random.normal(loc=0,scale=sigmaT,size=10000)
+        tValsFour = randVals(N,10000,tau) + np.abs(np.random.normal(loc=0,scale=sigmaT,size=10000))
         out = tauEst(tVals=tValsFour)
         print("For sigma_T = "+str(sigmaT))
         print("muon decay time [s]: " + str(out[0]))
         print("pion decay time [s]: " + str(out[1]))
+
+        nBins = 60
+        counts, edges = np.histogram(tValsFour, bins=nBins)
+        wBins = wBin(max(edges), min(edges), len(edges)-1)
+        cBins = edges[:-1] + wBins/2
+        plt.bar(cBins, counts, width=wBins, label="Generated Decay Times", alpha=0.5)
+        plt.plot(tValsFour,N(tValsFour,out)/200,".",markersize=1)
+        plt.xlabel("t [s]")
+        plt.ylabel("Number of entries")
+        plt.title("3(a) Histogram of 10'000 simulated decay times")
+        plt.legend()
+        plt.show()
+        #plt.savefig("Exercise 3a.png")
+        plt.clf()
 
 four()
