@@ -52,9 +52,9 @@ def nllBinned(params, pdf, x, l, counts, w) :
     pred = l*pdf(x, params)*w
     return -sum(counts*np.log(pred)-pred)
 
-def tauEst() :
+def tauEst(tVals=randVals(N,10000,tau)) :
     # generate random data according to the distribution
-    tVals = randVals(N, 10000, tau)
+    #tVals = randVals(N, 10000, tau) // take as argument for modularity
 
     # compute length of these values once
     l = len(tVals)
@@ -91,10 +91,15 @@ def threeC(reps) :
         pi_mean = np.mean(tauVals[1])
         mu_std = np.std(tauVals[0])
         pi_std = np.std(tauVals[1])
-        print("muon avg: decay time and stdev: " + str(mu_mean) + ", " + str(mu_std))
-        print("pion avg: decay time and stdev: " + str(pi_mean) + ", " + str(pi_std))
+        print("muon avg: decay time [s] and stdev [s]: " + str(mu_mean) + ", " + str(mu_std))
+        print("pion avg: decay time [s] and stdev [s]: " + str(pi_mean) + ", " + str(pi_std))
 
-def fourA(sigmaTvals=[1/100, 1/10, 1*tau[1]]):
+def four(sigmaTvals=[1/100, 1/10, 1*tau[1]]):
     for sigmaT in sigmaTvals:
-        tVals = randVals(N,10000,tau) + np.random.normal(loc=0,scale=sigmaT,size=10000)
+        tValsFour = randVals(N,10000,tau) + np.random.normal(loc=0,scale=sigmaT,size=10000)
+        out = tauEst(tVals=tValsFour)
+        print("For sigma_T = "+str(sigmaT))
+        print("muon decay time [s]: " + str(out[0]))
+        print("pion decay time [s]: " + str(out[1]))
 
+four()
