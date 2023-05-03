@@ -106,8 +106,9 @@ def four(sigmaTvals=[1/100, 1/10, 1*tau[1]]):
         counts, edges = np.histogram(tValsFour, bins=nBins)
         wBins = wBin(max(edges), min(edges), len(edges)-1)
         cBins = edges[:-1] + wBins/2
-        plt.bar(cBins, counts, width=wBins, label="Generated Decay Times", alpha=0.5)
+        #plt.bar(cBins, counts, width=wBins, label="Generated Decay Times", alpha=0.5)
         plt.plot(tValsFour,N(tValsFour,out)/200,".",markersize=1)
+        plt.xlim(0,3e-5)
         plt.xlabel("t [s]")
         plt.ylabel("Number of entries")
         plt.title("3(a) Histogram of 10'000 simulated decay times")
