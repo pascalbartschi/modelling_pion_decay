@@ -94,11 +94,13 @@ def threeC(reps) :
         print("muon avg: decay time [s] and stdev [s]: " + str(mu_mean) + ", " + str(mu_std))
         print("pion avg: decay time [s] and stdev [s]: " + str(pi_mean) + ", " + str(pi_std))
 
-def four(sigmaTvals=np.array([1/100, 1/10, 1])*tau[1]):
+def four(sigmaTvals=[1/100, 1/10, 1]):
+    fig, ax = plt.subplots(3)
+    i=0
     for sigmaT in sigmaTvals:
-        tValsFour = randVals(N,10000,tau) + np.abs(np.random.normal(loc=0,scale=sigmaT,size=10000))
+        tValsFour = randVals(N,10000,tau) + np.abs(np.random.normal(loc=0,scale=sigmaT*tau[1],size=10000))
         out = tauEst(tVals=tValsFour)
-        print("For sigma_T = "+str(sigmaT))
+        print("For sigma_T = "+str(sigmaT)+"*tau_pion")
         print("muon decay time [s]: " + str(out[0]))
         print("pion decay time [s]: " + str(out[1]))
 
@@ -106,15 +108,16 @@ def four(sigmaTvals=np.array([1/100, 1/10, 1])*tau[1]):
         counts, edges = np.histogram(tValsFour, bins=nBins)
         wBins = wBin(max(edges), min(edges), len(edges)-1)
         cBins = edges[:-1] + wBins/2
-        plt.bar(cBins, counts, width=wBins, label="Generated Decay Times", alpha=0.5)
-        plt.plot(tValsFour,N(tValsFour,out)/100,".",markersize=1)
-        #plt.xlim(0,3e-5)
-        plt.xlabel("t [s]")
-        plt.ylabel("Number of entries")
-        plt.title("3(a) Histogram of 10'000 simulated decay times")
-        plt.legend()
-        plt.show()
-        #plt.savefig("Exercise 3a.png")
-        plt.clf()
+        ax[i].bar(cBins, counts, width=wBins, label="Generated Decay Times", alpha=0.5)
+        ax[i].plot(tValsFour,N(tValsFour,out)/210,".",markersize=1,label="Fitted Decay Function")
+        ax[i].set_xlabel("t [s]")
+        ax[i].set_ylabel("Number of entries")
+        ax[i].set_title("$\sigma_t = $"+str(sigmaT)+r"$\cdot \tau_\pi$")
+        i+=1
+    fig.suptitle("4(b) Histogram of 10'000 simulated decay times with Gaussian smear")
+    #fig.legend(loc="upper center")
+    fig.tight_layout()
+    plt.savefig("Exercise 4.png")
+    plt.clf()
 
-four()
+four() # -- remaining: "Judge the quality of the fit and the results you obtain for the fit parameters"
