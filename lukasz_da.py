@@ -94,4 +94,7 @@ def threeC(reps) :
         print("muon avg: decay time and stdev: " + str(mu_mean) + ", " + str(mu_std))
         print("pion avg: decay time and stdev: " + str(pi_mean) + ", " + str(pi_std))
 
-threeC(10)
+def fourA(sigmaTvals=[1/100, 1/10, 1*tau[1]]):
+    for sigmaT in sigmaTvals:
+        tVals = randVals(N,10000,tau) + np.random.normal(loc=0,scale=sigmaT,size=10000)
+
