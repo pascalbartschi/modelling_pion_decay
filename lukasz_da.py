@@ -1,6 +1,7 @@
 import numpy as np
 from matplotlib import pyplot as plt
 from scipy import optimize as opt
+from scipy.stats import norm
 
 # particle lifetimes and uncertainties (muon, pion)
 tau = (2.1969811e-6, 2.6033e-8)
@@ -12,6 +13,9 @@ tBound = (1e-8, 3e-5)
 # decay function
 def N(t, param, N0=1) :
     return (N0/(param[0]-param[1]))*(np.exp(-t/param[0]) - np.exp(-t/param[1]))
+
+def N_gauss(t, param, N0=1):
+    return N(t,param,N0) + norm.pdf(t)
 
 # accept reject unifogirm
 def accept_uni(pdf, param, lowhi) :
@@ -94,11 +98,12 @@ def threeC(reps) :
         print("muon avg: decay time [s] and stdev [s]: " + str(mu_mean) + ", " + str(mu_std))
         print("pion avg: decay time [s] and stdev [s]: " + str(pi_mean) + ", " + str(pi_std))
 
-def four(sigmaTvals=[1/100, 1/10, 1]):
+def four(pdf,exercisePart,sigmaTvals=[1/100, 1/10, 1]):
+    print("Part 4"+str(exercisePart))
     fig, ax = plt.subplots(3)
     i=0
     for sigmaT in sigmaTvals:
-        tValsFour = randVals(N,10000,tau) + np.abs(np.random.normal(loc=0,scale=sigmaT*tau[1],size=10000))
+        tValsFour = randVals(pdf,10000,tau) + np.abs(np.random.normal(loc=0,scale=sigmaT*tau[1],size=10000))
         out = tauEst(tVals=tValsFour)
         print("For sigma_T = "+str(sigmaT)+"*tau_pion")
         print("muon decay time [s]: " + str(out[0]))
@@ -109,15 +114,18 @@ def four(sigmaTvals=[1/100, 1/10, 1]):
         wBins = wBin(max(edges), min(edges), len(edges)-1)
         cBins = edges[:-1] + wBins/2
         ax[i].bar(cBins, counts, width=wBins, label="Generated Decay Times", alpha=0.5)
-        ax[i].plot(tValsFour,N(tValsFour,out)/210,".",markersize=1,label="Fitted Decay Function")
+        ax[i].plot(tValsFour,pdf(tValsFour,out)/210,".",markersize=1,label="Fitted Decay Function")
         ax[i].set_xlabel("t [s]")
         ax[i].set_ylabel("Number of entries")
         ax[i].set_title("$\sigma_t = $"+str(sigmaT)+r"$\cdot \tau_\pi$")
         i+=1
-    fig.suptitle("4(b) Histogram of 10'000 simulated decay times with Gaussian smear")
+    suptitle = "4"+str(exercisePart) +" Histogram of 10'000 simulated decay times with Gaussian smear"
+    fig.suptitle(suptitle)
     #fig.legend(loc="upper center")
     fig.tight_layout()
-    plt.savefig("Exercise 4.png")
+    filename = "Exercise 4"+str(exercisePart)+".png"
+    plt.savefig(filename)
     plt.clf()
 
-four() # -- remaining: "Judge the quality of the fit and the results you obtain for the fit parameters"
+four(N,"b") # -- remaining: "Judge the quality of the fit and the results you obtain for the fit parameters"
+four(N_gauss,"c")
