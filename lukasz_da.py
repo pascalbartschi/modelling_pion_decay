@@ -96,3 +96,10 @@ def threeC(reps) :
         pi_std = np.std(tauVals[1])
         print("muon avg: decay time and stdev: " + str(mu_mean) + ", " + str(mu_std))
         print("pion avg: decay time and stdev: " + str(pi_mean) + ", " + str(pi_std))
+
+def randValSmear(pdf, samples, params, mu, sigma) :
+    rands = randVals(pdf, samples, params)
+    smear = np.random.normal(loc=mu, scale=sigma, size=samples)
+    randsmear = rands + smear
+    # crop to zero where values are negative
+    return np.where(randsmear >=0, randsmear, 0)
