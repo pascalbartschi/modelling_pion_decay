@@ -70,6 +70,7 @@ def tauEst(tVals) :
     mval = result["fun"]
 
     unc_est = 0
+    #unc_est = nllBinnedUnc(mparam, N, cBins, l, counts, wBins)
     return mparam, unc_est, result['success']
 
 def threeB() :
@@ -126,3 +127,7 @@ def four() :
         ax[i].set_ylabel("Number of entries")
         ax[i].set_title("$\sigma_t = $"+str(sigmaf[i])+r"$\cdot \tau_\pi$")
     plt.show()
+
+#threeC(10)
+#threeB()
+four()
