@@ -45,7 +45,7 @@ def threeA() :
     plt.ylabel("Number of entries")
     plt.title("3(a) Histogram of 10'000 simulated decay times")
     plt.legend()
-    plt.savefig("Exercise 3a.png")
+    plt.savefig("Exercise_3a.png")
     plt.clf()
 
 def nllBinned(params, pdf, x, l, counts, w) :
@@ -125,4 +125,4 @@ def four() :
         ax[i].set_xlabel("t [s]")
         ax[i].set_ylabel("Number of entries")
         ax[i].set_title("$\sigma_t = $"+str(sigmaf[i])+r"$\cdot \tau_\pi$")
-    plt.show()
+    plt.savefig("Exercise_4.png")
