@@ -103,3 +103,26 @@ def randValSmear(pdf, samples, params, mu, sigma) :
     randsmear = rands + smear
     # crop to zero where values are negative
     return np.where(randsmear >=0, randsmear, 0)
+
+def four() :
+    tauVals = [[], []]
+    fig, ax = plt.subplots(3)
+    sigmaf = [1/100, 1/10, 1]
+    for i in range(len(sigmaf)):
+        tVals = randValSmear(N, 10000, tau, 0, sigmaf[i]*tau[1])
+        tauEst(tVals)
+        out = tauEst(tVals)
+        print(out)
+        tauVals[0].append(out[0][0])
+        tauVals[1].append(out[0][1])
+
+        nBins = 60
+        counts, edges = np.histogram(tVals, bins=nBins)
+        wBins = wBin(max(edges), min(edges), len(edges)-1)
+        cBins = edges[:-1] + wBins/2
+        ax[i].bar(cBins, counts, width=wBins, label="Generated Decay Times", alpha=0.5)
+        ax[i].plot(tVals, N(tVals, out[0])/210,".",markersize=1,label="Fitted Decay Function")
+        ax[i].set_xlabel("t [s]")
+        ax[i].set_ylabel("Number of entries")
+        ax[i].set_title("$\sigma_t = $"+str(sigmaf[i])+r"$\cdot \tau_\pi$")
+    plt.show()
