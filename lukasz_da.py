@@ -52,10 +52,7 @@ def nllBinned(params, pdf, x, l, counts, w) :
     pred = l*pdf(x, params)*w
     return -sum(counts*np.log(pred)-pred)
 
-def tauEst() :
-    # generate random data according to the distribution
-    tVals = randVals(N, 10000, tau)
-
+def tauEst(tVals) :
     # compute length of these values once
     l = len(tVals)
 
@@ -67,21 +64,27 @@ def tauEst() :
 
     tau_range = (0.5e-6, 0.5e-8)
     tauBounds = [(tau[0]-tau_range[0], tau[0]+tau_range[0]), (tau[1]-tau_range[1], tau[1]+tau_range[1])]
-    #tauBounds = [(1.5e-6, 3e-6), (1.5e-8, 3e-8)]
 
-    result = opt.minimize(nllBinned, (2e-6, 2e-8), args=(N, cBins, l, counts, wBins), bounds=tauBounds, method='Powell')
-    return result["x"][0], result["x"][1], result['success']
+    result = opt.minimize(nllBinned, (2e-6, 2.2e-8), args=(N, cBins, l, counts, wBins), bounds=tauBounds, method='Powell')
+    mparam = (result["x"][0], result["x"][1])
+    mval = result["fun"]
+
+    unc_est = 0
+    return mparam, unc_est, result['success']
 
 def threeB() :
-    print(tauEst())
+    # generate random data according to the distribution
+    tVals = randVals(N, 10000, tau)
+    print(tauEst(tVals))
 
 def threeC(reps) :
     tauVals=[[],[]]
     suc = True
     for i in range(reps) :
-        out = tauEst()
-        tauVals[0].append(out[0])
-        tauVals[1].append(out[1])
+        tVals = randVals(N, 10000, tau)
+        out = tauEst(tVals)
+        tauVals[0].append(out[0][0])
+        tauVals[1].append(out[0][1])
         if out[2] == False : suc = False
 
     if suc == False :
