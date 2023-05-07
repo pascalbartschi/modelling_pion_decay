@@ -40,10 +40,10 @@ def threeA() :
     counts, edges = np.histogram(tVals, bins=nBins, range=tBound)
     wBins = wBin(max(edges), min(edges), len(edges)-1)
     cBins = edges[:-1] + wBins/2
-    plt.bar(cBins, counts, width=wBins, label="Generated Decay Times", alpha=0.5)
+    plt.bar(cBins, counts, width=wBins, label="Generated Decay Times", alpha=0.5 , color = "#68CAEF")
     plt.xlabel("t [s]")
     plt.ylabel("Number of entries")
-    plt.title("3(a) Histogram of 10'000 simulated decay times")
+    # plt.title("3(a) Histogram of 10'000 simulated decay times")
     plt.legend()
     plt.savefig("Exercise_3a.png")
     plt.clf()
@@ -106,8 +106,9 @@ def randValSmear(pdf, samples, params, mu, sigma) :
 
 def four() :
     tauVals = [[], []]
-    fig, ax = plt.subplots(3)
+    fig, ax = plt.subplots(3, sharex = True)
     sigmaf = [1/100, 1/10, 1]
+    colors = ["#FFB5B5", "#FF7C7C", "#FE0000"]
     for i in range(len(sigmaf)):
         tVals = randValSmear(N, 10000, tau, 0, sigmaf[i]*tau[1])
         tauEst(tVals)
@@ -120,9 +121,20 @@ def four() :
         counts, edges = np.histogram(tVals, bins=nBins)
         wBins = wBin(max(edges), min(edges), len(edges)-1)
         cBins = edges[:-1] + wBins/2
-        ax[i].bar(cBins, counts, width=wBins, label="Generated Decay Times", alpha=0.5)
-        ax[i].plot(tVals, N(tVals, out[0])/210,".",markersize=1,label="Fitted Decay Function")
-        ax[i].set_xlabel("t [s]")
-        ax[i].set_ylabel("Number of entries")
-        ax[i].set_title("$\sigma_t = $"+str(sigmaf[i])+r"$\cdot \tau_\pi$")
+        ax[i].bar(cBins, counts, width=wBins,  alpha=0.5, color = "#68CAEF") # label="Generated Decay Times",
+        ax[i].plot(tVals, N(tVals, out[0])/210,".",markersize=1, color = colors[i]) #,label="Fitted Decay Function"
+        # ax[i].set_xlabel("t [s]")
+        # ax[i].set_ylabel("Number of entries")
+        # ax[i].set_title("$\sigma_t = $"+str(sigmaf[i])+r"$\cdot \tau_\pi$")
+
+    # @levin: dödel solution for manual legend :)
+    for i in range(len(sigmaf)):
+        ax[len(sigmaf)-1].plot([], [], color = colors[i], label = "$\sigma_t = $"+str(sigmaf[i])+r"$\cdot \tau_\pi$")
+
+    ax[len(sigmaf) - 2].set_ylabel("Number of entries")
+    # ax[len(sigmaf)-1].bar([], [], alpha=0.5, label="Generated Decay Times", color = "#68CAEF")
+    ax[len(sigmaf)-1].legend(loc = "upper right")
+    ax[len(sigmaf) - 1].set_xlabel("t [s]")
     plt.savefig("Exercise_4.png")
+    plt.clf()
+    plt.close()
