@@ -1,6 +1,7 @@
 import numpy as np
 from matplotlib import pyplot as plt
 from scipy import optimize as opt
+from scipy.stats import norm
 
 # particle lifetimes and uncertainties (muon, pion)
 tau = (2.1969811e-6, 2.6033e-8)
@@ -13,6 +14,9 @@ tBound = (1e-8, 3e-5)
 def N(t, param, N0=1) :
     return (N0/(param[0]-param[1]))*(np.exp(-t/param[0]) - np.exp(-t/param[1]))
 
+def N_gauss(t, param, N0=1) :
+    return N(t, param, N0) + norm(t)
+
 # accept reject uniform
 def accept_uni(pdf, param, lowhi) :
     lx, hx, ly, hy = lowhi
@@ -22,6 +26,27 @@ def accept_uni(pdf, param, lowhi) :
         if pdf(x, param) > y :
             break
     return x
+
+def pull(rec_quant, gen_quant, rec_quant_unc):
+    return (np.array(rec_quant)-gen_quant)/np.array(rec_quant_unc)
+
+def pull_dist(pull_vals1, pull_vals2):
+    pull_vals = (pull_vals1,pull_vals2)
+    fig, ax = plt.subplots(2)
+    xlabels = [r"$\hat{\tau}_{\mu}$",r"$\hat{\tau}_{\mu}$"]
+    nBins = 30
+    for i in range(2):
+        counts, edges = np.histogram(pull_vals[i], bins=nBins)
+        wBins = wBin(max(edges), min(edges), len(edges)-1)
+        cBins = edges[:-1] + wBins/2
+        ax[i].bar(cBins, counts, width=wBins, label="Generated Decay Times", alpha=0.5)
+        ax[i].set_xlabel("pull of "+str(xlabels[i]))
+        ax[i].set_ylabel("Number of entries")
+        ax[i].set_title("Pull Distribution of "+str(xlabels[i]))
+        ax[i].legend()
+    plt.tight_layout()
+    plt.show()
+    plt.savefig("Exercise 3d.png")
         
 # random numbers in an interval given a pdf
 def randVals(pdf, samples, params) :
@@ -110,12 +135,15 @@ def threeB() :
 
 def threeC(reps) :
     tauVals=[[],[]]
+    tauUncs=[[],[]]
     suc = True
     for i in range(reps) :
         tVals = randVals(N, 10000, tau)
         out = tauEst(tVals)
         tauVals[0].append(out[0][0])
         tauVals[1].append(out[0][1])
+        tauUncs[0].append(out[1][0][0])
+        tauUncs[1].append(out[1][1][0])
         if out[2] == False : suc = False
 
     if suc == False :
@@ -125,6 +153,11 @@ def threeC(reps) :
         pi_mean = np.mean(tauVals[1])
         mu_std = np.std(tauVals[0])
         pi_std = np.std(tauVals[1])
+        mu_pull = pull(tauVals[0],tau[0],tauUncs[0])
+        pi_pull = pull(tauVals[1],tau[1],tauUncs[1])
+        print("Mean and std of the pull dist. for muon",np.mean(mu_pull),np.std(mu_pull))
+        print("Mean and std of the pull dist. for pion muon",np.mean(pi_pull),np.std(pi_pull))
+        pull_dist(mu_pull,pi_pull)
         print("muon avg: decay time and stdev: " + str(mu_mean) + ", " + str(mu_std))
         print("pion avg: decay time and stdev: " + str(pi_mean) + ", " + str(pi_std))
 
@@ -135,12 +168,12 @@ def randValSmear(pdf, samples, params, mu, sigma) :
     # crop to zero where values are negative
     return np.where(randsmear >=0, randsmear, 0)
 
-def four() :
+def four(pdf) :
     tauVals = [[], []]
     fig, ax = plt.subplots(3)
     sigmaf = [1/100, 1/10, 1]
     for i in range(len(sigmaf)):
-        tVals = randValSmear(N, 10000, tau, 0, sigmaf[i]*tau[1])
+        tVals = randValSmear(pdf, 10000, tau, 0, sigmaf[i]*tau[1])
         tauEst(tVals)
         out = tauEst(tVals)
         print(out)
@@ -152,12 +185,14 @@ def four() :
         wBins = wBin(max(edges), min(edges), len(edges)-1)
         cBins = edges[:-1] + wBins/2
         ax[i].bar(cBins, counts, width=wBins, label="Generated Decay Times", alpha=0.5)
-        ax[i].plot(tVals, N(tVals, out[0])/210,".",markersize=1,label="Fitted Decay Function")
+        ax[i].plot(tVals, pdf(tVals, out[0])/210,".",markersize=1,label="Fitted Decay Function")
         ax[i].set_xlabel("t [s]")
         ax[i].set_ylabel("Number of entries")
         ax[i].set_title("$\sigma_t = $"+str(sigmaf[i])+r"$\cdot \tau_\pi$")
     plt.show()
 
-#threeC(10)
+
 #threeB()
-four()
+#threeC(10)
+four(N) #4b
+four(N_gauss) #4c
