@@ -52,6 +52,34 @@ def nllBinned(params, pdf, x, l, counts, w) :
     pred = l*pdf(x, params)*w
     return -sum(counts*np.log(pred)-pred)
 
+def nllBinnedUnc(mparams, pdf, x, l, counts, w, uncBounds, paramBounds) :
+    lpar = len(mparams)
+    unc_est = []
+    for i in range(lpar) :
+        mpars = lambda p, param : np.insert(param, i, p)
+        inp = lambda p : np.insert(opt.minimize(lambda ptwo : nllBinned(list(mpars(p, ptwo)), N, x, l, counts, w), x0=np.delete(mparams, i), bounds=[paramBounds[i]])['x'], i, p)
+        nll = lambda p : nllBinned(list(inp(p)), pdf, x, l, counts, w)
+        res = opt.minimize(nll, x0=mparams[i], bounds=[paramBounds[i]], method='Nelder-Mead')
+        minp = res['x']
+        mval = res['fun']
+        # find where we cross the 2.3/2 mark to find confidence interval
+        func = lambda p : nll(minp+p) - mval - 2.3/2
+        uncm = uncp = 0
+        uncmval = uncpval = -2.3/2
+        
+        for j in np.linspace(uncBounds[i][0], uncBounds[i][1], 1000) :
+            if abs(func(-j)) < abs(uncmval) :
+                uncm = -j
+                uncmval = func(uncm)
+            if abs(func(j)) < abs(uncpval) :
+                uncp = j
+                uncpval = func(uncp)
+        print(func(uncm))
+        print(func(uncp))
+        unc_est.append([abs(uncm), abs(uncp)])
+
+    return unc_est
+
 def tauEst(tVals) :
     # compute length of these values once
     l = len(tVals)
@@ -69,8 +97,10 @@ def tauEst(tVals) :
     mparam = (result["x"][0], result["x"][1])
     mval = result["fun"]
 
-    unc_est = 0
-    #unc_est = nllBinnedUnc(mparam, N, cBins, l, counts, wBins)
+    uncBounds = [[1e-13, 1e-6], [1e-13, 1e-8]]
+    paramBounds = [[1e-10, 5e-6], [1e-10, 5e-6]]
+    unc_est = ([0, 0], [0, 0])
+    unc_est = nllBinnedUnc(mparam, N, cBins, l, counts, wBins, uncBounds, paramBounds)
     return mparam, unc_est, result['success']
 
 def threeB() :
