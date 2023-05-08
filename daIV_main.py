@@ -32,14 +32,13 @@ def pull(rec_quant, gen_quant, rec_quant_unc):
 
 def pull_dist(pull_vals1, pull_vals2):
     pull_vals = (pull_vals1,pull_vals2)
-    fig, ax = plt.subplots(nrows = 2, ncols = 1, sharey=True)
-    xlabels = [r"$\hat{\tau}_{\mu}$",r"$\hat{\tau}_{\mu}$"]
+    fig, ax = plt.subplots(nrows = 1, ncols = 2, sharey=True)
+    xlabels = [r"$\hat{\tau}_{\pi}$",r"$\hat{\tau}_{\mu}$"]
     nBins = 30
 
     # define a local gaussian
     gaussian = lambda x, a, mean, stddev : a * np.exp(-((x - mean) / stddev) ** 2)
-    # initial guess for params
-    p0 = [1.0, 0.0, 1.0]
+
 
     # for plotting
     colors = ["#FFB5B5", "#FF7C7C", "#FE0000"]
@@ -49,11 +48,14 @@ def pull_dist(pull_vals1, pull_vals2):
         wBins = wBin(max(edges), min(edges), len(edges)-1)
         cBins = edges[:-1] + wBins/2
         # fit the data
-        # Fit the data using the curve_fit function
-        coeff, _ = opt.curve_fit(gaussian, cBins, counts, p0=p0)
-        print(f"Histogram fitted to N({coeff[1]}, {coeff[2]**2})")
-        ax[i].plot(cBins, gaussian(cBins[:-1], *coeff), color = colors[i], label = "N({coeff[1]}, {coeff[2]**2})")
-        ax[i].bar(cBins, counts, width=wBins, label="Generated Decay Times", alpha=0.5) #
+        # p0 = [1.0, np.mean(cBins), np.std(cBins)] # initial guess for params
+        # coeff, _ = opt.curve_fit(gaussian, cBins, counts, p0=p0)
+        # print(f"Histogram fitted to N({coeff[1]}, {coeff[2]**2})")
+        # ax[i].plot(cBins, gaussian(cBins, *coeff), color = colors[i], label = f"N({coeff[1]}, {coeff[2]**2})")
+        # REMOVE THIS WHEN FITTING WORKS:
+        ax[i].plot(cBins, gaussian(cBins, 1, np.mean(cBins), np.std(cBins)), color=colors[i],
+                   label=f"N({round(np.mean(cBins), 1)}, {round(np.std(cBins) ** 2, 1)})")
+        ax[i].bar(cBins, counts, width=wBins, alpha=0.5) #  label="Generated Decay Times",
         ax[i].set_xlabel("pull of "+str(xlabels[i]))
         #ax[i].set_ylabel("Number of entries")
         #ax[i].set_title("Pull Distribution of "+str(xlabels[i]))
