@@ -35,10 +35,22 @@ def pull_dist(pull_vals1, pull_vals2):
     fig, ax = plt.subplots(2)
     xlabels = [r"$\hat{\tau}_{\mu}$",r"$\hat{\tau}_{\mu}$"]
     nBins = 30
+
+    # define a local gaussian
+    def gaussian(x, amplitude, mean, stddev):
+        return amplitude * np.exp(-((x - mean) / stddev) ** 2)
+    # initial guess for params
+    p0 = [1.0, 0.0, 1.0]
+
     for i in range(2):
         counts, edges = np.histogram(pull_vals[i], bins=nBins)
         wBins = wBin(max(edges), min(edges), len(edges)-1)
         cBins = edges[:-1] + wBins/2
+        # fit the data
+        # Fit the data using the curve_fit function
+        coeff, _ = opt.curve_fit(gaussian, cBins, counts, p0=p0)
+        print(f"Histogram fitted to N({coeff[1]}, {coeff[2]**2})")
+        ax[i].plot(cBins, gaussian(cBins[:-1], *coeff), 'r--')
         ax[i].bar(cBins, counts, width=wBins, label="Generated Decay Times", alpha=0.5)
         ax[i].set_xlabel("pull of "+str(xlabels[i]))
         ax[i].set_ylabel("Number of entries")
@@ -46,7 +58,7 @@ def pull_dist(pull_vals1, pull_vals2):
         ax[i].legend()
     plt.tight_layout()
     plt.show()
-    plt.savefig("Exercise 3d.png")
+    plt.savefig("Exercise_3d.png")
         
 # random numbers in an interval given a pdf
 def randVals(pdf, samples, params) :
