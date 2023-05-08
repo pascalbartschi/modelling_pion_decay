@@ -15,7 +15,7 @@ def N(t, param, N0=1) :
     return (N0/(param[0]-param[1]))*(np.exp(-t/param[0]) - np.exp(-t/param[1]))
 
 def N_gauss(t, param, N0=1) :
-    return N(t, param, N0) + norm(t)
+    return N(t, param, N0) + norm.pdf(t)
 
 # accept reject uniform
 def accept_uni(pdf, param, lowhi) :
