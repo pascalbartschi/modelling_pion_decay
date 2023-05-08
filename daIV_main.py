@@ -183,6 +183,29 @@ def threeC(reps) :
         print("muon avg: decay time and stdev: " + str(mu_mean) + ", " + str(mu_std))
         print("pion avg: decay time and stdev: " + str(pi_mean) + ", " + str(pi_std))
 
+        nBins = 20
+        counts, edges = np.histogram(tauVals[0], bins=nBins)
+        wBins = wBin(max(edges), min(edges), len(edges)-1)
+        cBins = edges[:-1] + wBins/2
+        plt.bar(cBins, counts, width=wBins, label="Generated Decay Times", alpha=0.5)
+        plt.xlabel("t [s]")
+        plt.ylabel("Number of entries")
+        plt.title("3(c) Histogram of 100 Generated Muon Decay Times")
+        plt.legend()
+        plt.savefig("Exercise_3c_Muon.png")
+        plt.clf()
+        
+        counts, edges = np.histogram(tauVals[1], bins=nBins)
+        wBins = wBin(max(edges), min(edges), len(edges)-1)
+        cBins = edges[:-1] + wBins/2
+        plt.bar(cBins, counts, width=wBins, label="Generated Decay Times", alpha=0.5)
+        plt.xlabel("t [s]")
+        plt.ylabel("Number of entries")
+        plt.title("3(c) Histogram of 100 Generated Pion Decay Times")
+        plt.legend()
+        plt.savefig("Exercise_3c_Pion.png")
+        plt.clf()
+
 def randValSmear(pdf, samples, params, mu, sigma) :
     rands = randVals(pdf, samples, params)
     smear = np.random.normal(loc=mu, scale=sigma, size=samples)
