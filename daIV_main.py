@@ -190,9 +190,3 @@ def four(pdf) :
         ax[i].set_ylabel("Number of entries")
         ax[i].set_title("$\sigma_t = $"+str(sigmaf[i])+r"$\cdot \tau_\pi$")
     plt.show()
-
-
-#threeB()
-#threeC(10)
-four(N) #4b
-four(N_gauss) #4c
