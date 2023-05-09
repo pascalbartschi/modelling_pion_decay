@@ -148,9 +148,9 @@ def tauEst(tVals) :
     mparam = (result["x"][0], result["x"][1])
     mval = result["fun"]
 
-    uncBounds = [[1e-13, 1e-6], [1e-16, 1e-7]]
-    paramBounds = [[1e-10, 5e-6], [1e-15, 5e-7]]
-    minBounds = [[1e-10, 5e-6], [1e-15, 5e-7]]
+    uncBounds = [[1e-13, 1e-6], [1e-13, 5e-6]]
+    paramBounds = [[1e-13, 5e-6], [1e-13, 5e-6]]
+    minBounds = [[1e-13, 5e-6], [1e-13, 5e-6]]
 
     unc_est = ([0, 0], [0, 0])
     unc_est = nllBinnedUnc(mparam, N, cBins, l, counts, wBins, uncBounds, paramBounds, minBounds)
@@ -170,8 +170,8 @@ def threeC(reps) :
         out = tauEst(tVals)
         tauVals[0].append(out[0][0])
         tauVals[1].append(out[0][1])
-        tauUncs[0].append(out[1][0][0])
-        tauUncs[1].append(out[1][1][0])
+        tauUncs[0].append(out[1][0][1])
+        tauUncs[1].append(out[1][1][1])
         if out[2] == False : suc = False
 
     if suc == False :
@@ -254,3 +254,4 @@ def four(pdf) :
     plt.clf()
     plt.close()
 
+threeB()
