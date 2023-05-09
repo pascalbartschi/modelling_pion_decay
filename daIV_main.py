@@ -101,14 +101,14 @@ def nllBinned(params, pdf, x, l, counts, w) :
     pred = l*pdf(x, params)*w
     return -sum(counts*np.log(pred)-pred)
 
-def nllBinnedUnc(mparams, pdf, x, l, counts, w, uncBounds, paramBounds) :
+def nllBinnedUnc(mparams, pdf, x, l, counts, w, uncBounds, paramBounds, minBounds) :
     lpar = len(mparams)
     unc_est = []
     for i in range(lpar) :
         mpars = lambda p, param : np.insert(param, i, p)
         inp = lambda p : np.insert(opt.minimize(lambda ptwo : nllBinned(list(mpars(p, ptwo)), N, x, l, counts, w), x0=np.delete(mparams, i), bounds=[paramBounds[i]])['x'], i, p)
         nll = lambda p : nllBinned(list(inp(p)), pdf, x, l, counts, w)
-        res = opt.minimize(nll, x0=mparams[i], bounds=[paramBounds[i]], method='Nelder-Mead')
+        res = opt.minimize(nll, x0=mparams[i], bounds=[minBounds[i]], method='Nelder-Mead')
         minp = res['x']
         mval = res['fun']
         # find where we cross the 2.3/2 mark to find confidence interval
@@ -148,8 +148,10 @@ def tauEst(tVals) :
 
     uncBounds = [[1e-13, 1e-6], [1e-13, 1e-8]]
     paramBounds = [[1e-10, 5e-6], [1e-10, 5e-6]]
+    minBounds = [[1e-10, 5e-6], [1e-10, 5e-6]]
+
     unc_est = ([0, 0], [0, 0])
-    unc_est = nllBinnedUnc(mparam, N, cBins, l, counts, wBins, uncBounds, paramBounds)
+    unc_est = nllBinnedUnc(mparam, N, cBins, l, counts, wBins, uncBounds, paramBounds, minBounds)
     return mparam, unc_est, result['success']
 
 def threeB() :
