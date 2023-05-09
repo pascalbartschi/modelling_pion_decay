@@ -116,15 +116,17 @@ def nllBinnedUnc(mparams, pdf, x, l, counts, w, uncBounds, paramBounds, minBound
         uncm = uncp = 0
         uncmval = uncpval = -2.3/2
         
-        for j in np.linspace(uncBounds[i][0], uncBounds[i][1], 1000) :
+        for j in np.linspace(uncBounds[i][0], uncBounds[i][1], 8000) :
             if abs(func(-j)) < abs(uncmval) :
                 uncm = -j
                 uncmval = func(uncm)
             if abs(func(j)) < abs(uncpval) :
                 uncp = j
                 uncpval = func(uncp)
+        print(i)
         print(func(uncm))
         print(func(uncp))
+        print(uncm,uncp)
         unc_est.append([abs(uncm), abs(uncp)])
 
     return unc_est
@@ -135,7 +137,7 @@ def tauEst(tVals) :
 
     # define number of bins
     nBins = 50
-    counts, edges = np.histogram(tVals, bins=nBins, range=tBound)
+    counts, edges = np.histogram(tVals, bins=nBins, range=(0,3e-5))
     wBins = wBin(max(edges), min(edges), len(edges)-1)
     cBins = edges[:-1] + wBins/2
 
@@ -146,9 +148,9 @@ def tauEst(tVals) :
     mparam = (result["x"][0], result["x"][1])
     mval = result["fun"]
 
-    uncBounds = [[1e-13, 1e-6], [1e-13, 1e-8]]
-    paramBounds = [[1e-10, 5e-6], [1e-10, 5e-6]]
-    minBounds = [[1e-10, 5e-6], [1e-10, 5e-6]]
+    uncBounds = [[1e-13, 1e-6], [1e-16, 1e-7]]
+    paramBounds = [[1e-10, 5e-6], [1e-15, 5e-7]]
+    minBounds = [[1e-10, 5e-6], [1e-15, 5e-7]]
 
     unc_est = ([0, 0], [0, 0])
     unc_est = nllBinnedUnc(mparam, N, cBins, l, counts, wBins, uncBounds, paramBounds, minBounds)
@@ -252,3 +254,4 @@ def four(pdf) :
     plt.clf()
     plt.close()
 
+threeC(100)
