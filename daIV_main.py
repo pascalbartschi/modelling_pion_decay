@@ -68,7 +68,7 @@ def pull_dist(pull_vals1, pull_vals2):
     ax[len(xlabels) - 1].legend(loc="upper right")
     ax[0].set_ylabel("Number of entries")
     plt.tight_layout()
-    plt.savefig("Exercise_3d.png")
+    plt.savefig("Exercise_3d.eps", format="eps")
     plt.clf()
     plt.close()
         
@@ -92,9 +92,9 @@ def threeA() :
     plt.bar(cBins, counts, width=wBins, label="Generated Decay Times", alpha=0.5)
     plt.xlabel("t [s]")
     plt.ylabel("Number of entries")
-    plt.title("3(a) Histogram of 10'000 simulated decay times")
+    #plt.title("3(a) Histogram of 10'000 simulated decay times")
     plt.legend()
-    plt.savefig("Exercise_3a.png")
+    plt.savefig("Exercise_3a.eps", format="eps")
     plt.clf()
 
 def nllBinned(params, pdf, x, l, counts, w) :
@@ -196,9 +196,9 @@ def threeC(reps) :
         plt.bar(cBins, counts, width=wBins, label="Generated Decay Times", alpha=0.5)
         plt.xlabel("t [s]")
         plt.ylabel("Number of entries")
-        plt.title("3(c) Histogram of 100 Generated Muon Decay Times")
+        #plt.title("3(c) Histogram of 100 Generated Muon Decay Times")
         plt.legend()
-        plt.savefig("Exercise_3c_Muon.png")
+        plt.savefig("Exercise_3c_Muon.eps", format="eps")
         plt.clf()
         
         counts, edges = np.histogram(tauVals[1], bins=nBins)
@@ -207,9 +207,9 @@ def threeC(reps) :
         plt.bar(cBins, counts, width=wBins, label="Generated Decay Times", alpha=0.5)
         plt.xlabel("t [s]")
         plt.ylabel("Number of entries")
-        plt.title("3(c) Histogram of 100 Generated Pion Decay Times")
+        #plt.title("3(c) Histogram of 100 Generated Pion Decay Times")
         plt.legend()
-        plt.savefig("Exercise_3c_Pion.png")
+        plt.savefig("Exercise_3c_Pion.eps", format="eps")
         plt.clf()
 
 def randValSmear(pdf, samples, params, mu, sigma) :
@@ -250,8 +250,8 @@ def four(pdf) :
     # ax[len(sigmaf)-1].bar([], [], alpha=0.5, label="Generated Decay Times", color = "#68CAEF")
     ax[len(sigmaf) - 1].legend(loc="upper right")
     ax[len(sigmaf) - 1].set_xlabel("t [s]")
-    plt.savefig("Exercise_4.png")
+    plt.savefig("Exercise_4.eps", format="eps")
     plt.clf()
     plt.close()
 
-threeC(100)
+threeB()
