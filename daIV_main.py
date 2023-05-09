@@ -225,7 +225,7 @@ def four(pdf) :
     sigmaf = [1 / 100, 1 / 10, 1]
     colors = ["#FFB5B5", "#FF7C7C", "#FE0000"]
     for i in range(len(sigmaf)):
-        tVals = randValSmear(N, 10000, tau, 0, sigmaf[i] * tau[1])
+        tVals = randValSmear(pdf, 10000, tau, 0, sigmaf[i] * tau[1])
         tauEst(tVals)
         out = tauEst(tVals)
         print(out)
@@ -237,7 +237,7 @@ def four(pdf) :
         wBins = wBin(max(edges), min(edges), len(edges) - 1)
         cBins = edges[:-1] + wBins / 2
         ax[i].bar(cBins, counts, width=wBins, alpha=0.5, color="#68CAEF")  # label="Generated Decay Times",
-        ax[i].plot(tVals, N(tVals, out[0]) / 210, ".", markersize=1, color=colors[i])  # ,label="Fitted Decay Function"
+        ax[i].plot(tVals, pdf(tVals, out[0]) / 210, ".", markersize=1, color=colors[i])  # ,label="Fitted Decay Function"
         # ax[i].set_xlabel("t [s]")
         # ax[i].set_ylabel("Number of entries")
         # ax[i].set_title("$\sigma_t = $"+str(sigmaf[i])+r"$\cdot \tau_\pi$")
@@ -250,8 +250,7 @@ def four(pdf) :
     # ax[len(sigmaf)-1].bar([], [], alpha=0.5, label="Generated Decay Times", color = "#68CAEF")
     ax[len(sigmaf) - 1].legend(loc="upper right")
     ax[len(sigmaf) - 1].set_xlabel("t [s]")
-    plt.savefig("Exercise_4.eps", format="eps")
+    plt.savefig(f"Exercise_4_{pdf.__name__}.eps", format="eps")
     plt.clf()
     plt.close()
 
-threeB()
